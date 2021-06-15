@@ -1,7 +1,6 @@
 body {
     background:#F6F6EF; 
-    width: 97vw; 
-    min-width:400px; 
+    min-width: 35rem;
     margin: 0px !important; 
     font-family: Roboto, "Segoe UI"; 
     font-weight: bold; 
