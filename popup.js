@@ -1,95 +1,82 @@
-window.onload = function(){
-  main();
-  setupEvents();
-};
-function setupEvents() {
-  document.getElementById("submitLink").addEventListener('click', submitCurrentTab, false);
-  document.getElementById("refresh").addEventListener('click', refreshLinks, false);
-  document.getElementById("options").addEventListener('click', openOptions, false);
-  document.getElementById("searchbox").addEventListener('keydown', function(event) {
-    if (event.which === 13) {
-      search();
-    }
-  });
-}
-function main() {
-  if (localStorage['HN.NumLinks'] == null) {
-    buildPopupAfterResponse = true;
-    UpdateFeed();
-  }
-  else {
-    buildPopup(RetrieveLinksFromLocalStorage());
-  }
-}
+var feed;
+var issueLink;
+var title; 
+var saved; 
+var savedHeader; 
+var toggleButton;
+var savedLinks;
 
-function buildPopup(links) {
-  var header = document.getElementById("header");
-  var feed = document.getElementById("feed");
-  var issueLink = document.getElementById("issues");
-  issueLink.addEventListener("click", openLinkFront);
+document.addEventListener("DOMContentLoaded", (event) => {
+  feed = document.getElementById("feed");
+  saved = document.getElementById("saved");
 
-  //Setup Title Link
-  var title = document.getElementById("title");
-  title.addEventListener("click", openLink);
+  title = document.getElementById("title");
+  title.addEventListener("click", chrome.extension.getBackgroundPage().openLink);
+
+  chrome.extension.getBackgroundPage().newItems = 0;
+  chrome.browserAction.setBadgeText({text: "" });
+
+  buildPopup(feed, chrome.extension.getBackgroundPage().currentLinks, false);
+  buildPopup(saved, appropriateArray(chrome.extension.getBackgroundPage().savedLinks), true);
   
-  //Setup search button
-  var searchButton = document.getElementById("searchbutton");
-  searchButton.addEventListener("click", search);
+});
 
+function appropriateArray(src) {
+  var new_ = [];
+  var length = Math.min(src.length, chrome.extension.getBackgroundPage().maxFeedItems);
+  
+  for(var i = 0; i < length; i++) 
+    new_.push(src[src.length-i-1]);
+  
+  return new_;
+}
+
+function handleClick(event, hnLink) {
+  event.preventDefault();
+
+  if(event.ctrlKey) {
+    chrome.extension.getBackgroundPage().saveLink(hnLink);
+    event.target.parentNode.parentNode.removeChild(event.target.parentNode);
+    saved.insertBefore(event.target.parentNode, saved.firstChild);
+    
+  } else chrome.extension.getBackgroundPage().openUrl(hnLink.link, (localStorage['HN.BackgroundTabs'] == 'false'));
+}
+
+function buildPopup(parent, links, keep) {
+  
   for (var i=0; i<links.length; i++) {
-    hnLink = links[i];
-    var row = document.createElement("tr");
-    row.className = "link";
-    var num = document.createElement("td");
-    num.innerText = i+1;
-    var link_col = document.createElement("td")
-    var title = document.createElement("a");
-      title.className = "link_title";
-      title.innerText = hnLink.Title;
-      title.href = hnLink.Link;
-      title.addEventListener("click", openLink);
-    var comments = document.createElement("a");
-      comments.className = "comments";
-      comments.innerText = "(comments)";
-      comments.href = hnLink.CommentsLink;
-      comments.addEventListener("click", openLink);
-    link_col.appendChild(title);
-    link_col.appendChild(comments);
-    row.appendChild(num);
-    row.appendChild(link_col)
-    feed.appendChild(row);
+    if(keep 
+        || !chrome.extension.getBackgroundPage().savedLinksHash.has(links[i].title+links[i].link))
+      parent.appendChild(createLink(links[i]));
   }
-  hideElement("spinner");
-  showElement("container");
+
 }
 
-function search() {
-  var searchBox = document.getElementById("searchbox");
-  var keywords = searchBox.value;
-  if (keywords.length > 0) {
-    var search_url = "https://hn.algolia.com/?query=" + keywords.replace(" ", "+");
-    openUrl(search_url, true);
-  }
-}
+function createLink(hnLink) {
+  var row = document.createElement("div");
+  var title = document.createElement("a");
+  var comments = document.createElement("a");
 
-function refreshLinks() {
-  var linkTable = document.getElementById("feed");
-  while(linkTable.hasChildNodes()) linkTable.removeChild(linkTable.firstChild); //Remove all current links
-  toggle("container");
-  toggle("spinner");
-  buildPopupAfterResponse = true;
-  UpdateFeed();
-  updateLastRefreshTime();
-}
+  row.className = "link";
+  
+  title.className = "link_title";
+  title.innerText = hnLink.title;
+  title.href = hnLink.link;
+  
+  comments.className = "comments";
+  comments.innerText = "(comments)";
+  comments.href = hnLink.commentsLink;
 
-//Submit the current tab
-function submitCurrentTab() {
-  console.log('submitCurrentTab!');
-  chrome.windows.getCurrent(function(win){
-    chrome.tabs.getSelected(win.id, function(tab){
-      var submit_url = "https://news.ycombinator.com/submitlink?u=" + encodeURIComponent(tab.url) + "&t=" + encodeURIComponent(tab.title);
-      openUrl(submit_url, true);
-    });
+  comments.addEventListener("click", (event)=>{
+    chrome.extension.getBackgroundPage().openUrl(event.target.href, (localStorage['HN.BackgroundTabs'] == 'false'));
   });
-}
+  
+  title.addEventListener("click", (event)=>{
+    handleClick(event, hnLink);
+  });
 
+  row.appendChild(title);
+  row.appendChild(comments);
+
+  return row;
+}
