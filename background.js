@@ -25,12 +25,11 @@ function parseHNLinks(rawXmlStr) {
 
   var count = Math.min(entries.length, maxFeedItems);
   
-  currentLinks = [];
+  newLinks = [];
   hashedLinks ??= hashedLinks | {};
 
   for (var i = 0; i < count; i++) {
     item = entries.item(i);
-
 
     var itemTitle = item.getElementsByTagName('title')[0]?.textContent;
     var itemLink = item.getElementsByTagName('link')[0]?.textContent;
@@ -44,16 +43,16 @@ function parseHNLinks(rawXmlStr) {
     if(hashedLinks[hnLink.title+hnLink.link]
       || savedLinks[hnLink.title+hnLink.link]) continue; 
     
-    currentLinks.push(hnLink);
+    newLinks.push(hnLink);
     newItems++;
   }
   
   hashedLinks = {};
 
-  currentLinks.forEach(x=>{
+  newLinks.forEach(x=>{
     hashedLinks[x.title+x.link] = true;
   });
-
+  currentLinks = [...newLinks, ...currentLinks];
   chrome.browserAction.setBadgeText({text: newItems > 0 ? newItems.toString() : "" });
   
   if(currentLinks.length > maxFeedItems) currentLinks = currentLinks.slice(currentLinks.length-maxFeedItems);
