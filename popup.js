@@ -23,7 +23,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
 });
 
 document.addEventListener("scroll", (event)=>{
-  if(document.scrollingElement.offsetHeight - document.scrollingElement.clientHeight + document.scrollingElement.scrollTop < 10
+  
+  if(parseInt(document.scrollingElement.offsetHeight) - parseInt(document.scrollingElement.clientHeight + document.scrollingElement.scrollTop) < 10
     && indexSavedLinks+chrome.extension.getBackgroundPage().maxFeedItems < chrome.extension.getBackgroundPage().savedLinks.length) {
       indexSavedLinks+=Math.min(chrome.extension.getBackgroundPage().savedLinks.length-indexSavedLinks, chrome.extension.getBackgroundPage().maxFeedItems);
       buildPopup(saved, appropriateArray(chrome.extension.getBackgroundPage().savedLinks, indexSavedLinks, indexSavedLinks+chrome.extension.getBackgroundPage().maxFeedItems), true);
