@@ -2,7 +2,7 @@ body {
     background:#F6F6EF; 
     min-width: 35rem;
     margin: 0px !important; 
-    font-family: Roboto, "Segoe UI"; 
+    font-family: Roboto, "Segoe UI", sans-serif; 
     font-weight: bold; 
     font-size: 12px;
 }

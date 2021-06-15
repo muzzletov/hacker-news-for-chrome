@@ -5,7 +5,7 @@ This is an extension for Google Chrome that displays the latest links from Y Com
 It was originally developed by Adam Albrecht.
 But looking at the source I felt the urge to clean it up to a large degree.
 Also, I remove search, which I wasn't using anyways.
-There is a saving function now, that can be issued by holding CTRL while clicking on a title.
+There is a saving function now, that can be issued by holding ALT while clicking on a title.
 
 #### Installation:
 

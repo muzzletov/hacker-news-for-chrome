@@ -42,7 +42,7 @@ function appropriateArray(src, index, end) {
 function handleClick(event, hnLink) {
   event.preventDefault();
 
-  if(event.ctrlKey) {
+  if(event.altKey) {
     chrome.extension.getBackgroundPage().saveLink(hnLink);
     event.target.parentNode.parentNode.removeChild(event.target.parentNode);
     saved.insertBefore(event.target.parentNode, saved.firstChild);
