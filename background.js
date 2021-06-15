@@ -1,10 +1,10 @@
 var maxFeedItems = 25;
 var retryMilliseconds = 120000;
 var firstRequest = true;
-var hashedLinks = {};
+var hashedLinks = new Set();
+var savedLinksHash = new Set();
 var currentLinks = [];
 var savedLinks = localStorage["HN.savedLinks"] === undefined? [] : JSON.parse(localStorage["HN.savedLinks"]);
-var savedLinksHash = new Set();
 var newItems = 0;
 
 var updateFeed = ()=> {
@@ -25,9 +25,8 @@ function parseHNLinks(rawXmlStr) {
 
   var count = Math.min(entries.length, maxFeedItems);
   
-  newLinks = [];
-  hashedLinks ??= hashedLinks | {};
-
+  var newLinks = [];
+  
   for (var i = 0; i < count; i++) {
     item = entries.item(i);
 
@@ -40,18 +39,16 @@ function parseHNLinks(rawXmlStr) {
       commentsLink: commentsLink || ""
     };
 
-    if(hashedLinks[hnLink.title+hnLink.link]
+    if(hashedLinks.has(hnLink.title+hnLink.link)
       || savedLinks[hnLink.title+hnLink.link]) continue; 
     
     newLinks.push(hnLink);
     newItems++;
   }
   
-  hashedLinks = {};
-
-  newLinks.forEach(x=>{
-    hashedLinks[x.title+x.link] = true;
-  });
+  hashedLinks.clear();
+  savedLinksHash.add(hnLink.title+hnLink.link);
+  newLinks.forEach(x=>hashedLinks.add(hnLink.title+hnLink.link));
   currentLinks = [...newLinks, ...currentLinks];
   chrome.browserAction.setBadgeText({text: newItems > 0 ? newItems.toString() : "" });
   
