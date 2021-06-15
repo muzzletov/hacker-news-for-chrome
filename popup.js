@@ -5,6 +5,7 @@ var saved;
 var savedHeader; 
 var toggleButton;
 var savedLinks;
+var indexSavedLinks = 0;
 
 document.addEventListener("DOMContentLoaded", (event) => {
   feed = document.getElementById("feed");
@@ -17,15 +18,23 @@ document.addEventListener("DOMContentLoaded", (event) => {
   chrome.browserAction.setBadgeText({text: "" });
 
   buildPopup(feed, chrome.extension.getBackgroundPage().currentLinks, false);
-  buildPopup(saved, appropriateArray(chrome.extension.getBackgroundPage().savedLinks), true);
+  buildPopup(saved, appropriateArray(chrome.extension.getBackgroundPage().savedLinks, 0, false), true);
   
 });
 
-function appropriateArray(src) {
+document.addEventListener("scroll", (event)=>{
+  if(document.scrollingElement.offsetHeight - document.scrollingElement.clientHeight + document.scrollingElement.scrollTop < 10
+    && indexSavedLinks+chrome.extension.getBackgroundPage().maxFeedItems < chrome.extension.getBackgroundPage().savedLinks.length) {
+      indexSavedLinks+=Math.min(chrome.extension.getBackgroundPage().savedLinks.length-indexSavedLinks, chrome.extension.getBackgroundPage().maxFeedItems);
+      buildPopup(saved, appropriateArray(chrome.extension.getBackgroundPage().savedLinks, indexSavedLinks, indexSavedLinks+chrome.extension.getBackgroundPage().maxFeedItems), true);
+  }
+});
+
+function appropriateArray(src, index, end) {
   var new_ = [];
-  var length = Math.min(src.length, chrome.extension.getBackgroundPage().maxFeedItems);
+  var length = Math.min(src.length, end || chrome.extension.getBackgroundPage().maxFeedItems);
   
-  for(var i = 0; i < length; i++) 
+  for(var i = index; i < length; i++) 
     new_.push(src[src.length-i-1]);
   
   return new_;

@@ -40,14 +40,12 @@ function parseHNLinks(rawXmlStr) {
       new: true
     };
 
-    if(hashedLinks.has(hnLink.title+hnLink.link)
-      || savedLinks[hnLink.title+hnLink.link]) continue; 
+    if(hashedLinks.has(hnLink.title+hnLink.link) || savedLinksHash.has(hnLink.title+hnLink.link)) continue; 
     hashedLinks.add(hnLink.title+hnLink.link);
     newLinks.push(hnLink);
     newItems++;
   }
 
-  savedLinksHash.add(hnLink.title+hnLink.link);
   currentLinks = [...newLinks, ...currentLinks];
   chrome.browserAction.setBadgeText({text: newItems > 0 ? newItems.toString() : "" });
   if(currentLinks.length > maxFeedItems) currentLinks = currentLinks.slice(0, maxFeedItems);
