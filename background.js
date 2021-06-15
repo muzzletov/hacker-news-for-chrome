@@ -74,7 +74,7 @@ function saveLink(hnLink) {
   localStorage["HN.savedLinks"] = JSON.stringify(savedLinks);
 }
 
-chrome.alarms.create("refresh", {delayInMinutes: 1.0, periodInMinutes: 1.0} );
+chrome.alarms.create("refresh", {delayInMinutes: 15.0, periodInMinutes: 15.0} );
 chrome.alarms.onAlarm.addListener((alarm)=>{
   updateFeed();
 });
