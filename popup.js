@@ -10,7 +10,6 @@ var indexSavedLinks = 0;
 document.addEventListener("DOMContentLoaded", (event) => {
   feed = document.getElementById("feed");
   saved = document.getElementById("saved");
-
   title = document.getElementById("title");
   title.addEventListener("click", chrome.extension.getBackgroundPage().openLink);
 
@@ -19,7 +18,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
   buildPopup(feed, chrome.extension.getBackgroundPage().currentLinks, false);
   buildPopup(saved, appropriateArray(chrome.extension.getBackgroundPage().savedLinks, 0, false), true);
-  
 });
 
 document.addEventListener("scroll", (event)=>{
@@ -33,11 +31,11 @@ document.addEventListener("scroll", (event)=>{
 
 function appropriateArray(src, index, end) {
   var new_ = [];
-  var length = Math.min(src.length, end || chrome.extension.getBackgroundPage().maxFeedItems);
+  var length = Math.min(src.length, end 
+    || chrome.extension.getBackgroundPage().maxFeedItems);
   
-  for(var i = index; i < length; i++) 
-    new_.push(src[src.length-i-1]);
-  
+  for(var i = index; i < length; i++) new_.push(src[src.length-i-1]);
+
   return new_;
 }
 
@@ -48,18 +46,13 @@ function handleClick(event, hnLink) {
     chrome.extension.getBackgroundPage().saveLink(hnLink);
     event.target.parentNode.parentNode.removeChild(event.target.parentNode);
     saved.insertBefore(event.target.parentNode, saved.firstChild);
-    
   } else chrome.extension.getBackgroundPage().openUrl(hnLink.link, (localStorage['HN.BackgroundTabs'] == 'false'));
 }
 
 function buildPopup(parent, links, keep) {
-  
-  for (var i=0; i<links.length; i++) {
-    if(keep 
-        || !chrome.extension.getBackgroundPage().savedLinksHash.has(links[i].title+links[i].link))
-      parent.appendChild(createLink(links[i]));
-  }
-
+  for (var i=0; i<links.length; i++) 
+    (keep || !chrome.extension.getBackgroundPage().savedLinksHash.has(links[i].title+links[i].link)) 
+      && parent.appendChild(createLink(links[i]));
 }
 
 function createLink(hnLink) {

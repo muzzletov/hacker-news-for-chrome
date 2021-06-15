@@ -3,8 +3,8 @@ var retryMilliseconds = 120000;
 var firstRequest = true;
 var hashedLinks = new Set();
 var savedLinksHash = new Set();
-var currentLinks = [];
 var savedLinks = localStorage["HN.savedLinks"] === undefined? [] : JSON.parse(localStorage["HN.savedLinks"]);
+var currentLinks = [];
 var newItems = 0;
 
 var updateFeed = ()=> {
@@ -17,14 +17,8 @@ var updateFeed = ()=> {
 function parseHNLinks(rawXmlStr) {
   var parser = new DOMParser();
   var doc = parser.parseFromString(rawXmlStr, "text/xml");
-  var entries = doc.getElementsByTagName('entry');
-  
-  if (entries.length == 0) {
-    entries = doc.getElementsByTagName('item');
-  }
-
+  var entries = doc.getElementsByTagName('entry')?.length == 0? doc.getElementsByTagName('item') : doc.getElementsByTagName('entry');
   var count = Math.min(entries.length, maxFeedItems);
-  
   var newLinks = [];
   
   for (var i = 0; i < count; i++) {
