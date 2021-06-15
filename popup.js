@@ -59,10 +59,10 @@ function createLink(hnLink) {
 
   row.className = "link";
   
-  title.className = "link_title";
+  title.className = `link_title${hnLink.new?" new":""}`;
   title.innerText = hnLink.title;
   title.href = hnLink.link;
-  
+
   comments.className = "comments";
   comments.innerText = "(comments)";
   comments.href = hnLink.commentsLink;
@@ -75,6 +75,8 @@ function createLink(hnLink) {
     handleClick(event, hnLink);
   });
 
+  hnLink.new = false;
+  
   row.appendChild(title);
   row.appendChild(comments);
 

@@ -36,23 +36,21 @@ function parseHNLinks(rawXmlStr) {
     var hnLink = {
       link: itemLink || "", 
       title: itemTitle || "Unknown Title", 
-      commentsLink: commentsLink || ""
+      commentsLink: commentsLink || "",
+      new: true
     };
 
     if(hashedLinks.has(hnLink.title+hnLink.link)
       || savedLinks[hnLink.title+hnLink.link]) continue; 
-    
+    hashedLinks.add(hnLink.title+hnLink.link);
     newLinks.push(hnLink);
     newItems++;
   }
-  
-  hashedLinks.clear();
+
   savedLinksHash.add(hnLink.title+hnLink.link);
-  newLinks.forEach(x=>hashedLinks.add(hnLink.title+hnLink.link));
   currentLinks = [...newLinks, ...currentLinks];
   chrome.browserAction.setBadgeText({text: newItems > 0 ? newItems.toString() : "" });
-  
-  if(currentLinks.length > maxFeedItems) currentLinks = currentLinks.slice(currentLinks.length-maxFeedItems);
+  if(currentLinks.length > maxFeedItems) currentLinks = currentLinks.slice(0, maxFeedItems);
 }
 
 function openLink(e) {
@@ -78,7 +76,7 @@ function saveLink(hnLink) {
   localStorage["HN.savedLinks"] = JSON.stringify(savedLinks);
 }
 
-chrome.alarms.create("refresh", {delayInMinutes: 15.0, periodInMinutes: 15.0} );
+chrome.alarms.create("refresh", {delayInMinutes: 1.0, periodInMinutes: 1.0} );
 chrome.alarms.onAlarm.addListener((alarm)=>{
   updateFeed();
 });
