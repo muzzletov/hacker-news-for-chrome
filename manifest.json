@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Hacker News",
   "version": "4.0",
-  "description": "Displays recent stories from Hacker News",
+  "description": "Displays recent stories from Hacker News and Lobste.rs",
   "icons": { "48": "icon48.png",
            "128": "icon128.png" },
   "browser_action": {
@@ -16,7 +16,8 @@
   "options_page":"options.html",
   "permissions": [
     "tabs","alarms",
-    "https://news.ycombinator.com/"
+    "https://news.ycombinator.com/",
+    "https://lobste.rs/" 
   ],
   "content_security_policy": "script-src 'self' 'unsafe-eval' https://news.ycombinator.com; object-src 'self' 'unsafe-eval' https://news.ycombinator.com"
 }

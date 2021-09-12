@@ -1,4 +1,4 @@
-var maxFeedItems = 25;
+var maxFeedItems = 50;
 var retryMilliseconds = 120000;
 var firstRequest = true;
 var hashedLinks = new Set();
@@ -8,18 +8,27 @@ var currentLinks = [];
 var newItems = 0;
 
 var updateFeed = ()=> {
-  fetch('https://news.ycombinator.com/rss').then(async result => {
-    links = parseHNLinks(await result.text());
-    localStorage["HN.LastRefresh"] = (new Date()).getTime();
-  });
+  result = Promise.all([
+    fetch('https://news.ycombinator.com/rss').then(async result => {
+      return parseHNLinks((await result.text()));
+      
+    }),
+    fetch('https://lobste.rs/newest.json').then(async result => {
+      return parseLobsterLinks(await result.json() || []);
+    })
+  ]).then(result=> {
+    addLinks(result.reduce((prev, current)=>prev.concat(current)));
+  })
+
+  localStorage["HN.LastRefresh"] = (new Date()).getTime();
 }
 
 function parseHNLinks(rawXmlStr) {
+  items = [];
   var parser = new DOMParser();
   var doc = parser.parseFromString(rawXmlStr, "text/xml");
   var entries = doc.getElementsByTagName('entry')?.length == 0? doc.getElementsByTagName('item') : doc.getElementsByTagName('entry');
-  var count = Math.min(entries.length, maxFeedItems);
-  var newLinks = [];
+  var count = Math.min(entries.length, parseInt(maxFeedItems/2));
   
   for (var i = 0; i < count; i++) {
     item = entries.item(i);
@@ -27,16 +36,46 @@ function parseHNLinks(rawXmlStr) {
     var itemTitle = item.getElementsByTagName('title')[0]?.textContent;
     var itemLink = item.getElementsByTagName('link')[0]?.textContent;
     var commentsLink = item.getElementsByTagName('comments')[0]?.textContent;
-    var hnLink = {
+    items.push({
+      type: "HN",
       link: itemLink || "", 
       title: itemTitle || "Unknown Title", 
       commentsLink: commentsLink || "",
+      commentsCount: "",
       new: true
-    };
+    })
+  }
 
-    if(hashedLinks.has(hnLink.title+hnLink.link) || savedLinksHash.has(hnLink.title+hnLink.link)) continue; 
-    hashedLinks.add(hnLink.title+hnLink.link);
-    newLinks.push(hnLink);
+  return items;
+}
+
+
+function parseLobsterLinks(jsonData) {
+  items = [];
+
+  var count = Math.min(jsonData.length, parseInt(maxFeedItems/2));
+
+  for (var i = 0; i < count; i++) {
+    let item=jsonData[i]
+    items.push({
+      type: "LS",
+      link: item.url || "", 
+      title: item.title || "Unknown Title", 
+      commentsCount: item.comments_count || 0,
+      commentsLink: item.comments_url || 0,
+      new: true
+    })
+  }
+
+  return items;
+}
+
+function addLinks(items) {
+  var newLinks = [];
+  for (item of items) {
+    if(hashedLinks.has(item.title+item.link) || savedLinksHash.has(item.title+item.link)) continue; 
+    hashedLinks.add(item.title+item.link);
+    newLinks.push(item);
     newItems++;
   }
 
@@ -50,16 +89,16 @@ function openLink(e) {
   openUrl(this.href, (localStorage['HN.BackgroundTabs'] == 'false'));
 }
 
-function openLinkFront(e) {
+function openLinkFront(ev) {
   e.preventDefault();
   openUrl(this.href, true);
 }
 
-function openUrl(url, take_focus) {
+function openUrl(url, takeFocus) {
   if (url.indexOf("http:") != 0 && url.indexOf("https:") != 0) {
     return;
   }
-  chrome.tabs.create({url: url, selected: take_focus});
+  chrome.tabs.create({url: url, selected: takeFocus});
 }
 
 function saveLink(hnLink) {

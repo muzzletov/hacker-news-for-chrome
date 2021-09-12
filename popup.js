@@ -6,7 +6,11 @@ var savedHeader;
 var toggleButton;
 var savedLinks;
 var indexSavedLinks = 0;
-
+/***
+ * - query controls
+ * - populate list
+ * - update badge
+ */
 document.addEventListener("DOMContentLoaded", (event) => {
   feed = document.getElementById("feed");
   saved = document.getElementById("saved");
@@ -19,7 +23,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
   buildPopup(feed, chrome.extension.getBackgroundPage().currentLinks, false);
   buildPopup(saved, appropriateArray(chrome.extension.getBackgroundPage().savedLinks, 0, false), true);
 });
-
+/***
+* add scroll listener for infinite scroll
+ */
 document.addEventListener("scroll", (event)=>{
   
   if(parseInt(document.scrollingElement.offsetHeight) - parseInt(document.scrollingElement.clientHeight + document.scrollingElement.scrollTop) < 10
@@ -29,6 +35,7 @@ document.addEventListener("scroll", (event)=>{
   }
 });
 
+// prepare array
 function appropriateArray(src, index, end) {
   var new_ = [];
   var length = Math.min(src.length, end 
@@ -57,11 +64,12 @@ function buildPopup(parent, links, keep) {
 
 function createLink(hnLink) {
   var row = document.createElement("div");
+  var network = document.createElement("span");
   var title = document.createElement("a");
   var comments = document.createElement("a");
 
   row.className = "link";
-  
+  network.innerText = hnLink.type+" ";
   title.className = `link_title${hnLink.new?" new":""}`;
   title.innerText = hnLink.title;
   title.href = hnLink.link;
@@ -79,7 +87,8 @@ function createLink(hnLink) {
   });
 
   hnLink.new = false;
-  
+
+  row.appendChild(network);
   row.appendChild(title);
   row.appendChild(comments);
 
