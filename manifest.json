@@ -15,7 +15,9 @@
   },
   "options_page":"options.html",
   "permissions": [
-    "tabs","alarms",
+    "tabs",
+    "notifications",
+    "alarms",
     "https://news.ycombinator.com/",
     "https://lobste.rs/" 
   ],
