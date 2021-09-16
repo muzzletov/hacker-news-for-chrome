@@ -82,7 +82,7 @@ function addLinks(items) {
   currentLinks = [...newLinks, ...currentLinks];
 
   chrome.browserAction.setBadgeText({text: newItems > 0 ? newItems.toString() : "" });
-  if(newItems > 0)
+/*  if(newItems > 0)
     chrome.notifications.create(`my-notification-${Date.now()}`, {
       
       type: "basic",
@@ -90,7 +90,7 @@ function addLinks(items) {
       message: '',
       iconUrl: "icon48.png",
       type: 'basic'
-    });
+    });*/
   if(currentLinks.length > maxFeedItems) currentLinks = currentLinks.slice(0, maxFeedItems);
 }
 
