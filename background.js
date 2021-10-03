@@ -1,4 +1,4 @@
-var maxFeedItems = 50;
+var maxFeedItems = 200;
 var retryMilliseconds = 120000;
 var firstRequest = true;
 var hashedLinks = new Set();

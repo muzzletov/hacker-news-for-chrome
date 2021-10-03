@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
   feed = document.getElementById("feed");
   saved = document.getElementById("saved");
   title = document.getElementById("title");
+  pop_view = document.getElementById("pop_view");
+
+  pop_view.addEventListener("click", ()=> {chrome.tabs.create({url : "popup.html"}); 
+  popup.cancel();});
   title.addEventListener("click", chrome.extension.getBackgroundPage().openLink);
 
   chrome.extension.getBackgroundPage().newItems = 0;
