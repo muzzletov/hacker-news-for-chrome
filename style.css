@@ -1,24 +1,45 @@
 body {
-    background:#F6F6EF; 
+    color: #5168ff80;
+    background:#1f1f1f; 
     min-width: 35rem;
     margin: 0px !important; 
     font-family: Roboto, "Segoe UI", sans-serif; 
     font-weight: bold; 
-    font-size: 12px;
+    font-size: 14px;
 }
+
 #trololo {
     visibility:hidden; 
     height:30px; 
     top:0px;
 }
+
 .new {
-    color:#000;
+    color:rgb(132, 142, 255);
+    font-size:12px;
+    font-style:italic;
+    font-weight: bold; 
+}
+
+.metadata {
+    color:rgb(177, 177, 177);
     font-size:12px;
     font-style:italic;
 }
+
+blockquote {
+    font: 1.4em 'Berkshire Swash', cursive;
+    margin: 0;
+  }
+  
+.container {
+    margin: 0 auto;
+    column-width: 25em;
+}
+
 a {
     text-decoration:none; 
-    color:rgb(0, 13, 159);
+    color:rgb(132, 142, 255);
 }
 a:hover {text-decoration:underline;}
 #hnIcon { vertical-align:middle }
@@ -27,8 +48,8 @@ a:hover {text-decoration:underline;}
     width:100%;
     line-height: 25px; 
     padding: 10px; 
-    background: rgb(206, 233, 255); 
-    color:#222;
+    background: rgb(29, 29, 29); 
+    color:rgb(190, 190, 190);
     top:0px; 
     margin-top:0px; 
 }
@@ -43,7 +64,7 @@ a:hover {text-decoration:underline;}
     font-size:12px; 
     padding-bottom:10px; 
 }
-#feed, #feed a:visited, #feed a.comments { color: #3846a180;}
+#feed, #feed a:visited, #feed a.comments { color: #5168ff80;}
 .link { 
     margin: 3px 0 10px 0 ;
     white-space: pre-wrap;
@@ -54,7 +75,7 @@ a:hover {text-decoration:underline;}
 }
 .error {
     white-space: nowrap;
-    color: red;
+    color: rgb(255, 147, 147);
 }
 #toggleButton {
     width:100%; 
