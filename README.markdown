@@ -13,3 +13,4 @@ Not available in the store yet.
 You can install it by navigating to chrome://extensions, enabling developer mode (toggle switch at the upper right)
 and then selecting the folder that contains the plugin.
 
+<img src = "https://github.com/muzzletov/hacker-news-for-chrome/blob/master/fullscreen.PNG?raw=true"/>
