@@ -4,21 +4,53 @@ var title;
 var saved; 
 var savedHeader; 
 var toggleButton;
+var slider;
 var savedLinks;
 var indexSavedLinks = 0;
-/***
- * - query controls
- * - populate list
- * - update badge
- */
+var metadataList = [];
+function appendMetadata(data) {
+  fetch(new URL(data.link)).then(function (response) {
+    return response.text();
+  }).then(function (html) {
+  
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(html, 'text/html');
+    
+    doc.querySelectorAll('meta').forEach(element => {if(element.name == "description" || element.name == "twitter:title") {data.element.innerText += element.content; return false;}});
+  
+  }).catch(function (err) {
+    console.warn('Something went wrong.', err);
+  });
+}
+
+
 document.addEventListener("DOMContentLoaded", (event) => {
   feed = document.getElementById("feed");
+  slider = document.getElementById("slider");
   saved = document.getElementById("saved");
   title = document.getElementById("title");
-  pop_view = document.getElementById("pop_view");
+  popView = document.getElementById("popView");
+  loadMetadata = document.getElementById("loadMetadata");
+  
+  slider.addEventListener("change", (e)=> {
+    Array.prototype.forEach.call(
+      document.getElementsByClassName("container"), 
+      (element)=>element.style.columnWidth = parseInt(e.target.value)+"em"
+    );
+  });
 
-  pop_view.addEventListener("click", ()=> {chrome.tabs.create({url : "popup.html"}); 
-  popup.cancel();});
+  popView.addEventListener("click", ()=> {
+    chrome.tabs.create({url : "popup.html"}); 
+    popup.cancel();
+  });
+
+  
+  loadMetadata.addEventListener("click", () => {
+    metadataList.forEach((item)=> {
+      appendMetadata(item);
+    });
+  });
+  
   title.addEventListener("click", chrome.extension.getBackgroundPage().openLink);
 
   chrome.extension.getBackgroundPage().newItems = 0;
@@ -61,6 +93,7 @@ function handleClick(event, hnLink) {
 }
 
 function buildPopup(parent, links, keep) {
+
   for (var i=0; i<links.length; i++) 
     (keep || !chrome.extension.getBackgroundPage().savedLinksHash.has(links[i].title+links[i].link)) 
       && parent.appendChild(createLink(links[i]));
@@ -70,14 +103,17 @@ function createLink(hnLink) {
   var row = document.createElement("div");
   var network = document.createElement("span");
   var title = document.createElement("a");
+  var metadata = document.createElement("span");
   var comments = document.createElement("a");
-
+  
   row.className = "link";
   network.innerText = hnLink.type+" ";
   title.className = `link_title${hnLink.new?" new":""}`;
   title.innerText = hnLink.title;
   title.href = hnLink.link;
 
+  metadata.className = `metadata`;
+  
   comments.className = "comments";
   comments.innerText = "(comments)";
   comments.href = hnLink.commentsLink;
@@ -93,8 +129,11 @@ function createLink(hnLink) {
   hnLink.new = false;
 
   row.appendChild(network);
+  row.appendChild(metadata);
   row.appendChild(title);
   row.appendChild(comments);
 
+  metadataList.push({element:metadata, link:hnLink.link});
+  
   return row;
 }
