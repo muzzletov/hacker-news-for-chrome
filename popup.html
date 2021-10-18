@@ -8,18 +8,19 @@
     <div id="headerBar">
       <img id="hnIcon" src="icon18.png">
       <a id="title" href="https://news.ycombinator.com">Hacker News</a>
-      <a id="pop_view" on href="https://news.ycombinator.com"> &#9112;</a>
-      
+      <a id="popView"> &#9112;</a>
+      <a id="loadMetadata"> &#9112;</a>
     </div>
 
     <div class="title" id="trololo"></div>
-
+    
     <div style="margin:25px;">
+      <input type="range" min="1" max="100" value="50" id="slider">
       <div class="title" id="feedHeader">Feed</div>
-      <div id="feed">
+      <div id="feed" class="container">
       </div>
       <div class="title" id="savedHeader">Saved</div>
-      <div id="saved"></div>
+      <div id="saved" class="container"></div>
     </div>
     <div style="text-align: center;padding-bottom: 40px;">
       <a href="#trololo">go to top</a>
